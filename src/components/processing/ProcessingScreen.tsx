@@ -114,49 +114,50 @@ const ProcessingScreen = ({ onComplete }: ProcessingScreenProps) => {
 
         {/* Processing steps */}
         <div className="space-y-4">
-          <AnimatePresence mode="wait">
-            {steps.map((step, index) => (
-              <motion.div
-                key={step.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                  scale: currentStepIndex === index ? 1.02 : 1,
-                }}
-                transition={{ delay: index * 0.1 }}
-                className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
+          {steps.map((step, index) => (
+            <motion.div
+              key={step.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{
+                opacity: 1,
+                x: 0,
+                scale: currentStepIndex === index ? 1.02 : 1,
+              }}
+              transition={{ delay: index * 0.1 }}
+              className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
+                step.status === "processing"
+                  ? "bg-primary/10 border border-primary/30"
+                  : step.status === "complete"
+                  ? "bg-green-500/10"
+                  : "bg-muted/30"
+              }`}
+            >
+              {getStepIcon(step, index)}
+              <span
+                className={`text-sm font-medium ${
                   step.status === "processing"
-                    ? "bg-primary/10 border border-primary/30"
+                    ? "text-foreground"
                     : step.status === "complete"
-                    ? "bg-green-500/10"
-                    : "bg-muted/30"
+                    ? "text-green-400"
+                    : "text-muted-foreground"
                 }`}
               >
-                {getStepIcon(step, index)}
-                <span
-                  className={`text-sm font-medium ${
-                    step.status === "processing"
-                      ? "text-foreground"
-                      : step.status === "complete"
-                      ? "text-green-400"
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  {step.label}
-                </span>
+                {step.label}
+              </span>
+              <AnimatePresence>
                 {step.status === "complete" && (
                   <motion.span
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0 }}
                     className="ml-auto text-xs text-green-400"
                   >
                     Done
                   </motion.span>
                 )}
-              </motion.div>
-            ))}
-          </AnimatePresence>
+              </AnimatePresence>
+            </motion.div>
+          ))}
         </div>
 
         {/* Animated dots */}

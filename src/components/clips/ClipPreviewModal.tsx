@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 
 interface ClipPreviewModalProps {
@@ -149,6 +150,9 @@ const ClipPreviewModal = ({
       <DialogContent className="max-w-4xl p-0 overflow-hidden bg-background/95 backdrop-blur-xl">
         <DialogHeader className="p-4 pb-0">
           <DialogTitle className="text-lg">{clip.title}</DialogTitle>
+          <DialogDescription className="sr-only">
+            Preview and adjust clip timing for {clip.title}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="p-4 space-y-4">
