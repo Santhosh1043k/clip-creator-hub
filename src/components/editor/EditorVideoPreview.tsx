@@ -1,9 +1,15 @@
 import { useRef, useEffect, useState } from "react";
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Keyboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { ClipEdits, CaptionPosition } from "@/types/clipEditor";
 import { formatTime } from "@/utils/clipUtils";
+import { useVideoKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface EditorVideoPreviewProps {
   videoUrl: string;
@@ -24,6 +30,11 @@ const EditorVideoPreview = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(startTime);
   const [isMuted, setIsMuted] = useState(false);
+
+  // Keyboard shortcuts
+  useVideoKeyboardShortcuts(videoRef, {
+    onPlayPause: () => setIsPlaying(videoRef.current ? !videoRef.current.paused : false),
+  });
 
   const clipDuration = endTime - startTime;
   const relativeTime = currentTime - startTime;
@@ -207,18 +218,44 @@ const EditorVideoPreview = ({
 
         {/* Control Buttons */}
         <div className="flex items-center justify-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => skip(-5)}>
-            <SkipBack className="w-5 h-5" />
-          </Button>
-          <Button variant="default" size="icon" className="h-12 w-12" onClick={togglePlay}>
-            {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" />}
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => skip(5)}>
-            <SkipForward className="w-5 h-5" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={toggleMute} className="ml-4">
-            {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" onClick={() => skip(-5)}>
+                <SkipBack className="w-5 h-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Skip back 5s (←)</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="default" size="icon" className="h-12 w-12" onClick={togglePlay}>
+                {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Play/Pause (Space)</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" onClick={() => skip(5)}>
+                <SkipForward className="w-5 h-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Skip forward 5s (→)</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" onClick={toggleMute} className="ml-4">
+                {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Mute (M)</TooltipContent>
+          </Tooltip>
+        </div>
+        
+        {/* Keyboard shortcuts hint */}
+        <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
+          <Keyboard className="w-3 h-3" />
+          <span>Space: Play • ←→: Skip • M: Mute • F: Fullscreen</span>
         </div>
       </div>
     </div>

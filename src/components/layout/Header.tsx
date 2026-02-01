@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Video, Upload, LayoutDashboard, Download, Menu, X } from "lucide-react";
+import { Video, Upload, LayoutDashboard, Download, Settings, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -10,8 +10,9 @@ const Header = () => {
 
   const navLinks = [
     { to: "/upload", label: "Upload", icon: Upload },
-    { to: "/downloads", label: "Downloads", icon: Download },
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { to: "/downloads", label: "Downloads", icon: Download },
+    { to: "/settings", label: "Settings", icon: Settings },
   ];
 
   const isActive = (path: string) => location.pathname === path;
