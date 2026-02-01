@@ -11,7 +11,13 @@ import CaptionsTab from "@/components/editor/CaptionsTab";
 import TitleTab from "@/components/editor/TitleTab";
 import VisualTab from "@/components/editor/VisualTab";
 import PlatformTab from "@/components/editor/PlatformTab";
+import ExportConfigModal from "@/components/export/ExportConfigModal";
+import ExportProcessingModal from "@/components/export/ExportProcessingModal";
+import ExportSummaryModal from "@/components/export/ExportSummaryModal";
 import { ClipEdits, defaultClipEdits } from "@/types/clipEditor";
+import { ExportConfig } from "@/types/export";
+import { Clip } from "@/types/clip";
+import { useExportQueue } from "@/hooks/useExportQueue";
 import { toast } from "sonner";
 import { MessageSquare, Type, Palette, Share2 } from "lucide-react";
 
@@ -36,6 +42,23 @@ const ClipEditor = () => {
   const [currentTime, setCurrentTime] = useState(0);
   const clipDuration = endTime - startTime;
 
+  // Export state
+  const [showExportConfig, setShowExportConfig] = useState(false);
+  const [showExportProcessing, setShowExportProcessing] = useState(false);
+  const [showExportSummary, setShowExportSummary] = useState(false);
+  
+  const { jobs, addToQueue, cancelJob, getCompletedClips, allComplete } = useExportQueue();
+
+  // Create a pseudo clip for export
+  const currentClip: Clip = {
+    id: `clip-${startTime}-${endTime}`,
+    startTime,
+    endTime,
+    title: clipTitle,
+    score: 85,
+    selected: true,
+  };
+
   // Redirect if no video URL
   useEffect(() => {
     if (!videoUrl) {
@@ -44,12 +67,37 @@ const ClipEditor = () => {
     }
   }, [videoUrl, navigate]);
 
+  // Watch for export completion
+  useEffect(() => {
+    if (allComplete && showExportProcessing) {
+      setShowExportProcessing(false);
+      setShowExportSummary(true);
+    }
+  }, [allComplete, showExportProcessing]);
+
   const handleSaveExport = () => {
-    toast.success("Clip saved! Export feature coming soon.");
+    setShowExportConfig(true);
+  };
+
+  const handleStartExport = (clipIds: string[], config: ExportConfig) => {
+    setShowExportConfig(false);
+    addToQueue([currentClip], config);
+    setShowExportProcessing(true);
+    toast.success("Export started!");
   };
 
   const handlePreviewFull = () => {
     toast.info("Full preview mode coming soon!");
+  };
+
+  const handleCreateMore = () => {
+    setShowExportSummary(false);
+    navigate("/upload");
+  };
+
+  const handleViewDownloads = () => {
+    setShowExportSummary(false);
+    navigate("/downloads");
   };
 
   if (!videoUrl) {
@@ -190,6 +238,29 @@ const ClipEditor = () => {
           </motion.div>
         </div>
       </main>
+
+      {/* Export Modals */}
+      <ExportConfigModal
+        isOpen={showExportConfig}
+        onClose={() => setShowExportConfig(false)}
+        clips={[currentClip]}
+        selectedClipIds={[currentClip.id]}
+        onExport={handleStartExport}
+      />
+
+      <ExportProcessingModal
+        isOpen={showExportProcessing}
+        jobs={jobs}
+        onCancel={cancelJob}
+        onClose={handleViewDownloads}
+      />
+
+      <ExportSummaryModal
+        isOpen={showExportSummary}
+        onClose={handleViewDownloads}
+        exportedClips={getCompletedClips()}
+        onCreateMore={handleCreateMore}
+      />
     </div>
   );
 };
