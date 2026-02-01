@@ -12,15 +12,15 @@ interface ClipCardProps {
 }
 
 const getScoreColor = (score: number): string => {
-  if (score >= 80) return "text-green-400";
-  if (score >= 60) return "text-yellow-400";
-  return "text-orange-400";
+  if (score >= 80) return "text-primary";
+  if (score >= 60) return "text-accent-foreground";
+  return "text-muted-foreground";
 };
 
 const getScoreBg = (score: number): string => {
-  if (score >= 80) return "bg-green-500/20 border-green-500/30";
-  if (score >= 60) return "bg-yellow-500/20 border-yellow-500/30";
-  return "bg-orange-500/20 border-orange-500/30";
+  if (score >= 80) return "bg-primary/20 border-primary/30";
+  if (score >= 60) return "bg-accent/20 border-accent/30";
+  return "bg-muted/50 border-border";
 };
 
 const ClipCard = ({ clip, index, onSelect, onPreview }: ClipCardProps) => {

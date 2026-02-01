@@ -6,6 +6,12 @@ export const formatTimestamp = (seconds: number): string => {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 };
 
+export const formatTime = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+};
+
 export const formatDuration = (startTime: number, endTime: number): string => {
   const duration = Math.round(endTime - startTime);
   if (duration < 60) {
