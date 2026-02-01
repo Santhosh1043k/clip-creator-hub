@@ -147,17 +147,17 @@ const ClipPreviewModal = ({
 
   return (
     <Dialog open={!!clip} onOpenChange={() => onClose()}>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-background/95 backdrop-blur-xl">
-        <DialogHeader className="p-4 pb-0">
-          <DialogTitle className="text-lg">{clip.title}</DialogTitle>
+      <DialogContent className="max-w-2xl max-h-[90vh] p-0 overflow-hidden bg-background/95 backdrop-blur-xl">
+        <DialogHeader className="p-3 pb-0">
+          <DialogTitle className="text-base">{clip.title}</DialogTitle>
           <DialogDescription className="sr-only">
             Preview and adjust clip timing for {clip.title}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="p-4 space-y-4">
-          {/* Video player */}
-          <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
+        <div className="p-3 space-y-3 overflow-y-auto max-h-[calc(90vh-60px)]">
+          {/* Video player - smaller aspect ratio */}
+          <div className="relative aspect-video bg-black rounded-lg overflow-hidden max-h-[35vh]">
             <video
               ref={videoRef}
               src={videoUrl}
@@ -171,20 +171,19 @@ const ClipPreviewModal = ({
               onClick={togglePlay}
               className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity"
             >
-              <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
                 {isPlaying ? (
-                  <Pause className="w-8 h-8 text-white" />
+                  <Pause className="w-6 h-6 text-white" />
                 ) : (
-                  <Play className="w-8 h-8 text-white ml-1" />
+                  <Play className="w-6 h-6 text-white ml-1" />
                 )}
               </div>
             </button>
           </div>
 
-          {/* Timeline slider */}
-          <div className="space-y-2">
+          {/* Timeline slider - more compact */}
+          <div className="space-y-1">
             <div className="relative">
-              {/* Clip range visualization */}
               <div className="absolute top-0 h-2 rounded-full bg-primary/30"
                 style={{
                   left: `${(startTime / (videoRef.current?.duration || 1)) * 100}%`,
@@ -202,92 +201,90 @@ const ClipPreviewModal = ({
             </div>
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>{formatTimestamp(currentTime)}</span>
-              <span>Clip: {formatTimestamp(startTime)} - {formatTimestamp(endTime)}</span>
+              <span className="font-medium">{formatTimestamp(startTime)} - {formatTimestamp(endTime)}</span>
               <span>{formatTimestamp(videoRef.current?.duration || 0)}</span>
             </div>
           </div>
 
-          {/* Trim controls */}
-          <div className="grid grid-cols-2 gap-6 py-4 border-t border-b border-border">
+          {/* Trim controls - more compact grid */}
+          <div className="grid grid-cols-2 gap-4 py-2 border-t border-b border-border">
             {/* Start time */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Start Time</label>
-              <div className="flex items-center gap-2">
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-foreground">Start</label>
+              <div className="flex items-center gap-1.5">
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-9 w-9"
+                  className="h-7 w-7"
                   onClick={() => adjustStart(-5)}
                 >
-                  <Minus className="w-4 h-4" />
+                  <Minus className="w-3 h-3" />
                 </Button>
-                <div className="flex-1 text-center font-mono text-lg">
+                <div className="flex-1 text-center font-mono text-sm">
                   {formatTimestamp(startTime)}
                 </div>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-9 w-9"
+                  className="h-7 w-7"
                   onClick={() => adjustStart(5)}
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-3 h-3" />
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground text-center">±5 seconds</p>
             </div>
 
             {/* End time */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">End Time</label>
-              <div className="flex items-center gap-2">
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-foreground">End</label>
+              <div className="flex items-center gap-1.5">
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-9 w-9"
+                  className="h-7 w-7"
                   onClick={() => adjustEnd(-5)}
                 >
-                  <Minus className="w-4 h-4" />
+                  <Minus className="w-3 h-3" />
                 </Button>
-                <div className="flex-1 text-center font-mono text-lg">
+                <div className="flex-1 text-center font-mono text-sm">
                   {formatTimestamp(endTime)}
                 </div>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-9 w-9"
+                  className="h-7 w-7"
                   onClick={() => adjustEnd(5)}
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-3 h-3" />
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground text-center">±5 seconds</p>
             </div>
           </div>
 
-          {/* Duration info */}
-          <div className="text-center text-sm text-muted-foreground">
-            Clip duration: <span className="font-semibold text-foreground">{Math.round(clipDuration)} seconds</span>
+          {/* Duration info - inline */}
+          <div className="text-center text-xs text-muted-foreground">
+            Duration: <span className="font-semibold text-foreground">{Math.round(clipDuration)}s</span>
           </div>
 
-          {/* Action buttons */}
-          <div className="flex justify-between">
-            <Button variant="secondary" onClick={handleOpenEditor} className="gap-2">
-              <Edit className="w-4 h-4" />
+          {/* Action buttons - more compact */}
+          <div className="flex items-center justify-between gap-2 pt-1">
+            <Button variant="secondary" size="sm" onClick={handleOpenEditor} className="gap-1.5">
+              <Edit className="w-3.5 h-3.5" />
               Open in Editor
             </Button>
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               {hasChanges && (
-                <Button variant="ghost" onClick={handleReset}>
-                  <RotateCcw className="w-4 h-4 mr-2" />
+                <Button variant="ghost" size="sm" onClick={handleReset}>
+                  <RotateCcw className="w-3.5 h-3.5 mr-1" />
                   Reset
                 </Button>
               )}
-              <Button variant="outline" onClick={onClose}>
+              <Button variant="outline" size="sm" onClick={onClose}>
                 Cancel
               </Button>
-              <Button variant="hero" onClick={handleSave}>
-                <Check className="w-4 h-4 mr-2" />
-                {hasChanges ? "Save Changes" : "Confirm"}
+              <Button variant="hero" size="sm" onClick={handleSave}>
+                <Check className="w-3.5 h-3.5 mr-1" />
+                {hasChanges ? "Save" : "OK"}
               </Button>
             </div>
           </div>
