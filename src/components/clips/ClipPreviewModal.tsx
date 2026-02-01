@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Play, Pause, Minus, Plus, Check, RotateCcw } from "lucide-react";
+import { X, Play, Pause, Minus, Plus, Check, RotateCcw, Edit } from "lucide-react";
 import { Clip } from "@/types/clip";
 import { formatTimestamp } from "@/utils/clipUtils";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ const ClipPreviewModal = ({
   onClose,
   onSave,
 }: ClipPreviewModalProps) => {
+  const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -122,6 +124,19 @@ const ClipPreviewModal = ({
         startTime,
         endTime,
       });
+    }
+  };
+
+  const handleOpenEditor = () => {
+    if (clip) {
+      const params = new URLSearchParams({
+        video: videoUrl,
+        start: startTime.toString(),
+        end: endTime.toString(),
+        title: clip.title,
+      });
+      onClose();
+      navigate(`/editor?${params.toString()}`);
     }
   };
 
@@ -251,20 +266,26 @@ const ClipPreviewModal = ({
           </div>
 
           {/* Action buttons */}
-          <div className="flex justify-end gap-3">
-            {hasChanges && (
-              <Button variant="ghost" onClick={handleReset}>
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Reset
+          <div className="flex justify-between">
+            <Button variant="secondary" onClick={handleOpenEditor} className="gap-2">
+              <Edit className="w-4 h-4" />
+              Open in Editor
+            </Button>
+            <div className="flex gap-3">
+              {hasChanges && (
+                <Button variant="ghost" onClick={handleReset}>
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  Reset
+                </Button>
+              )}
+              <Button variant="outline" onClick={onClose}>
+                Cancel
               </Button>
-            )}
-            <Button variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button variant="hero" onClick={handleSave}>
-              <Check className="w-4 h-4 mr-2" />
-              {hasChanges ? "Save Changes" : "Confirm"}
-            </Button>
+              <Button variant="hero" onClick={handleSave}>
+                <Check className="w-4 h-4 mr-2" />
+                {hasChanges ? "Save Changes" : "Confirm"}
+              </Button>
+            </div>
           </div>
         </div>
       </DialogContent>
