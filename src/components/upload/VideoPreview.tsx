@@ -12,7 +12,6 @@ interface VideoMetadata {
 
 interface VideoPreviewProps {
   file: File;
-  onDurationLoaded?: (duration: number) => void;
 }
 
 const formatDuration = (seconds: number): string => {
@@ -42,7 +41,7 @@ const getFileFormat = (type: string): string => {
   return formats[type] || "Unknown";
 };
 
-const VideoPreview = ({ file, onDurationLoaded }: VideoPreviewProps) => {
+const VideoPreview = ({ file }: VideoPreviewProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -69,7 +68,6 @@ const VideoPreview = ({ file, onDurationLoaded }: VideoPreviewProps) => {
       const dur = videoRef.current.duration;
       setDuration(dur);
       setMetadata(prev => prev ? { ...prev, duration: formatDuration(dur) } : null);
-      onDurationLoaded?.(dur);
     }
   };
 
